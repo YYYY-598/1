@@ -12,9 +12,8 @@
   var rememberCb = document.getElementById('remember');
   var forgotBtn = document.getElementById('forgotBtn');
 
-  var MIN_PW_LEN = 6;
+  var MIN_LEN = ApiClient.MIN_PW_LEN;
 
-  /* ---- Password visibility toggle ---- */
   togglePwBtn.addEventListener('click', function () {
     var showing = passwordInput.type === 'password';
     passwordInput.type = showing ? 'text' : 'password';
@@ -22,7 +21,6 @@
     togglePwBtn.setAttribute('aria-label', showing ? '隐藏密码' : '显示密码');
   });
 
-  /* ---- Validation helpers ---- */
   function showError(input, errorEl, msg) {
     errorEl.textContent = msg;
     errorEl.classList.add('visible');
@@ -41,7 +39,6 @@
     [loginInput, passwordInput].forEach(function (el) { el.classList.remove('error', 'success'); });
   }
 
-  /* ---- Real-time validation on blur ---- */
   loginInput.addEventListener('blur', function () {
     var val = loginInput.value.trim();
     if (!val) return showError(loginInput, loginError, '请输入邮箱或用户名');
@@ -51,11 +48,10 @@
   passwordInput.addEventListener('blur', function () {
     var val = passwordInput.value;
     if (!val) return showError(passwordInput, passwordError, '请输入密码');
-    if (val.length < MIN_PW_LEN) return showError(passwordInput, passwordError, '密码长度至少' + MIN_PW_LEN + '位');
+    if (val.length < MIN_LEN) return showError(passwordInput, passwordError, '密码长度至少' + MIN_LEN + '位');
     clearFieldError(passwordInput, passwordError);
   });
 
-  /* ---- Clear errors on input ---- */
   loginInput.addEventListener('input', function () {
     if (loginInput.value.trim() && loginError.classList.contains('visible')) {
       clearFieldError(loginInput, loginError);
@@ -63,22 +59,27 @@
   });
 
   passwordInput.addEventListener('input', function () {
-    if (passwordInput.value.length >= MIN_PW_LEN && passwordError.classList.contains('visible')) {
+    if (passwordInput.value.length >= MIN_LEN && passwordError.classList.contains('visible')) {
       clearFieldError(passwordInput, passwordError);
     }
   });
 
-  /* ---- Forgot password ---- */
   forgotBtn.addEventListener('click', function () {
     var email = loginInput.value.trim();
-    if (email) {
-      alert('如果账户 "' + email + '" 存在，重置链接已发送至关联邮箱。（演示模式）');
-    } else {
-      alert('请先输入您的邮箱地址。（演示模式）');
-    }
+    if (!email) { showError(loginInput, loginError, '请先输入邮箱地址'); return; }
+    ApiClient.forgotPassword(email).then(function (res) {
+      if (res.ok) {
+        submitBtn.classList.add('success-state');
+        btnText.textContent = '已发送';
+        setTimeout(function () { submitBtn.classList.remove('success-state'); btnText.textContent = '登 录'; }, 2000);
+      } else {
+        showError(loginInput, loginError, res.message);
+      }
+    }).catch(function () {
+      showError(loginInput, loginError, '网络异常');
+    });
   });
 
-  /* ---- Submit ---- */
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     clearAllErrors();
@@ -87,17 +88,10 @@
     var passwordVal = passwordInput.value;
     var valid = true;
 
-    if (!loginVal) {
-      showError(loginInput, loginError, '请输入邮箱或用户名');
-      valid = false;
-    }
-
-    if (!passwordVal) {
-      showError(passwordInput, passwordError, '请输入密码');
-      valid = false;
-    } else if (passwordVal.length < MIN_PW_LEN) {
-      showError(passwordInput, passwordError, '密码长度至少' + MIN_PW_LEN + '位');
-      valid = false;
+    if (!loginVal)  { showError(loginInput, loginError, '请输入邮箱或用户名'); valid = false; }
+    if (!passwordVal) { showError(passwordInput, passwordError, '请输入密码'); valid = false; }
+    else if (passwordVal.length < MIN_LEN) {
+      showError(passwordInput, passwordError, '密码长度至少' + MIN_LEN + '位'); valid = false;
     }
 
     if (!valid) {
@@ -108,29 +102,26 @@
 
     submitBtn.classList.add('loading');
 
-    setTimeout(function () {
-      if (rememberCb.checked) {
-        try { localStorage.setItem('sakura_user', loginVal); } catch (_) {}
-      } else {
-        try { localStorage.removeItem('sakura_user'); } catch (_) {}
-      }
-
-      submitBtn.classList.remove('loading');
-      submitBtn.classList.add('success-state');
-      btnText.textContent = '欢迎回来 ✿';
-
-      setTimeout(function () {
-        window.location.href = 'IndexPage.html';
-      }, 600);
-    }, 1000);
+    ApiClient.login({ login: loginVal, password: passwordVal, remember: rememberCb.checked })
+      .then(function (res) {
+        submitBtn.classList.remove('loading');
+        if (res.ok) {
+          if (rememberCb.checked) ApiClient.storage.setUser(loginVal);
+          else ApiClient.storage.removeUser();
+          if (res.data && res.data.token) ApiClient.setToken(res.data.token);
+          submitBtn.classList.add('success-state');
+          btnText.textContent = '欢迎回来';
+          setTimeout(function () { window.location.href = 'IndexPage.html'; }, 600);
+        } else {
+          showError(passwordInput, passwordError, res.message);
+          passwordInput.focus();
+        }
+      }).catch(function () {
+        submitBtn.classList.remove('loading');
+        showError(passwordInput, passwordError, '网络异常');
+      });
   });
 
-  /* ---- Restore remembered user ---- */
-  try {
-    var saved = localStorage.getItem('sakura_user');
-    if (saved) {
-      loginInput.value = saved;
-      rememberCb.checked = true;
-    }
-  } catch (_) {}
+  var saved = ApiClient.storage.getUser();
+  if (saved) { loginInput.value = saved; rememberCb.checked = true; }
 })();
