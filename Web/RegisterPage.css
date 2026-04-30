@@ -1,0 +1,149 @@
+/* ===== Page Layout (mirrored: card left, decor right) ===== */
+.page {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 440px 1fr;
+  gap: 60px;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+/* ===== Decorative Side ===== */
+.decor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  animation: fadeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.decor-branch {
+  width: 180px;
+  opacity: 0.85;
+}
+
+.decor-branch svg {
+  width: 100%;
+  height: auto;
+}
+
+.decor-haiku {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 1.05rem;
+  line-height: 2.1;
+  color: var(--brown-mid);
+  text-align: center;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== Card ===== */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 190, 200, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 40px 40px 32px;
+  box-shadow: var(--shadow-card);
+  animation: cardIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Card Header ===== */
+.card-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.brand {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 2.6rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--brown-dark);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+/* ===== Form ===== */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== Password Strength ===== */
+.strength-bar {
+  height: 5px;
+  background: rgba(180, 140, 150, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  transition: width 0.35s ease, background 0.35s ease;
+}
+
+.strength-text {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  margin-top: -8px;
+  transition: color 0.3s;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 860px) {
+  .page {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 440px;
+    padding: 28px 20px;
+  }
+
+  .decor { order: -1; }
+
+  .decor {
+    flex-direction: row;
+    gap: 16px;
+    animation: fadeSlideIn 0.6s ease;
+  }
+
+  .decor-branch { width: 100px; }
+
+  .decor-haiku {
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+}
+
+@media (max-width: 440px) {
+  .page { padding: 20px 14px; }
+  .card { padding: 32px 22px 28px; }
+  .brand { font-size: 2.2rem; }
+}

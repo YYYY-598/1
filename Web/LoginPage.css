@@ -1,0 +1,206 @@
+/* ===== Page Layout ===== */
+.page {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 60px;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+/* ===== Decorative Side ===== */
+.decor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  animation: fadeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.decor-branch {
+  width: 180px;
+  opacity: 0.85;
+}
+
+.decor-branch svg {
+  width: 100%;
+  height: auto;
+}
+
+.decor-haiku {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 1.05rem;
+  line-height: 2.1;
+  color: var(--brown-mid);
+  text-align: center;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== Card ===== */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 190, 200, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 44px 40px 36px;
+  box-shadow: var(--shadow-card);
+  animation: cardIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Card Header ===== */
+.card-header {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.brand {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 2.6rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--brown-dark);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+/* ===== Form ===== */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ===== Form Row (Remember + Forgot) ===== */
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition);
+}
+
+.check-label:hover { color: var(--text-primary); }
+
+.check-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.check-mark {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid rgba(180, 140, 155, 0.35);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), border-color var(--transition);
+  flex-shrink: 0;
+}
+
+.check-mark::after {
+  content: '';
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translateY(-1px);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.check-input:checked + .check-mark {
+  background: var(--pink-mid);
+  border-color: var(--pink-mid);
+}
+
+.check-input:checked + .check-mark::after { opacity: 1; }
+
+.check-input:focus-visible + .check-mark {
+  box-shadow: 0 0 0 3px rgba(244, 143, 177, 0.25);
+}
+
+.forgot-link {
+  background: none;
+  border: none;
+  color: var(--pink-deep);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: color var(--transition), text-decoration-color var(--transition);
+}
+
+.forgot-link:hover {
+  color: var(--pink-accent);
+  text-decoration-color: var(--pink-accent);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 800px) {
+  .page {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    max-width: 440px;
+    padding: 28px 20px;
+  }
+
+  .decor {
+    flex-direction: row;
+    gap: 16px;
+    animation: fadeSlideIn 0.6s ease;
+  }
+
+  .decor-branch { width: 100px; }
+
+  .decor-haiku {
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+}
+
+@media (max-width: 440px) {
+  .page { padding: 20px 14px; }
+  .card { padding: 32px 22px 28px; }
+  .brand { font-size: 2.2rem; }
+}

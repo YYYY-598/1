@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>仪表盘 — 花見</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="IndexPage.css">
+</head>
+<body>
+  <div class="petals-container" aria-hidden="true">
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  </div>
+
+  <div class="page">
+    <header class="topbar">
+      <h1 class="brand">花 見</h1>
+      <button class="btn-logout" id="logoutBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16,17 21,12 16,7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        退出
+      </button>
+    </header>
+
+    <div class="welcome">
+      <span class="greeting" id="greeting"></span>
+      <h2 class="user-name" id="displayName">旅人</h2>
+      <p class="welcome-msg">今日もいい日になりますように ✿</p>
+    </div>
+
+    <div class="cards">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">1,284</span>
+          <span class="stat-label">活跃用户</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">99.9%</span>
+          <span class="stat-label">运行时间</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">42</span>
+          <span class="stat-label">活跃任务</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-card">
+      <h3 class="activity-title">最近活动</h3>
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <div class="activity-content">
+            <span class="activity-text">登录成功</span>
+            <span class="activity-time">刚刚</span>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot activity-dot--muted"></div>
+          <div class="activity-content">
+            <span class="activity-text">系统备份完成</span>
+            <span class="activity-time">2 小时前</span>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot activity-dot--muted"></div>
+          <div class="activity-content">
+            <span class="activity-text">配置更新已部署</span>
+            <span class="activity-time">昨天</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="IndexPage.js"></script>
+</body>
+</html>

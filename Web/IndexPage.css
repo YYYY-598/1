@@ -1,0 +1,258 @@
+/* ===== Page ===== */
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+  animation: pageIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Topbar ===== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 28px;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 190, 200, 0.35);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 36px;
+}
+
+.brand {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--brown-dark);
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: rgba(180, 140, 150, 0.08);
+  border: 1px solid rgba(180, 140, 150, 0.2);
+  border-radius: 25px;
+  color: var(--brown-mid);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.btn-logout:hover {
+  background: rgba(229, 115, 115, 0.1);
+  border-color: rgba(229, 115, 115, 0.3);
+  color: #e57373;
+}
+
+/* ===== Welcome Section ===== */
+.welcome {
+  margin-bottom: 36px;
+}
+
+.greeting {
+  font-size: 0.85rem;
+  color: var(--pink-deep);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.user-name {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: var(--brown-dark);
+  margin: 4px 0 8px;
+  letter-spacing: 0.04em;
+}
+
+.welcome-msg {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* ===== Stat Cards ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 190, 200, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 16px rgba(180, 130, 140, 0.1);
+  animation: cardRise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  cursor: default;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.15s; }
+.stat-card:nth-child(3) { animation-delay: 0.25s; }
+
+.stat-card:hover {
+  border-color: var(--pink-mid);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(200, 140, 160, 0.2);
+}
+
+@keyframes cardRise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stat-icon {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+  border-radius: var(--radius-md);
+  color: var(--pink-deep);
+  flex-shrink: 0;
+}
+
+.stat-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--brown-dark);
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ===== Activity Card ===== */
+.activity-card {
+  padding: 28px 32px;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 190, 200, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 16px rgba(180, 130, 140, 0.1);
+  animation: cardRise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.35s;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.activity-card:hover {
+  border-color: rgba(220, 190, 200, 0.5);
+  box-shadow: 0 8px 28px rgba(200, 140, 160, 0.18);
+}
+
+.activity-title {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--brown-dark);
+  margin-bottom: 20px;
+  letter-spacing: 0.04em;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(129, 199, 132, 0.5);
+  flex-shrink: 0;
+}
+
+.activity-dot--muted {
+  background: var(--text-muted);
+  box-shadow: none;
+}
+
+.activity-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.activity-text {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.activity-time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 700px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .user-name {
+    font-size: 2.2rem;
+  }
+
+  .topbar {
+    padding: 14px 20px;
+    margin-bottom: 28px;
+  }
+
+  .brand { font-size: 1.5rem; }
+
+  .page {
+    padding: 20px 16px 40px;
+  }
+
+  .activity-card {
+    padding: 24px 22px;
+  }
+}

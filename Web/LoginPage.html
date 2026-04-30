@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 — 花見</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="LoginPage.css">
+</head>
+<body>
+  <div class="petals-container" aria-hidden="true">
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  </div>
+
+  <div class="page">
+    <div class="decor">
+      <div class="decor-branch">
+        <svg viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Branch -->
+          <path d="M100 300 Q95 250 80 200 Q60 140 90 90 Q110 60 100 30" stroke="#c49b95" stroke-width="2.5" fill="none"/>
+          <path d="M80 200 Q50 180 30 160" stroke="#c49b95" stroke-width="1.8" fill="none"/>
+          <path d="M90 140 Q120 120 145 110" stroke="#c49b95" stroke-width="1.8" fill="none"/>
+          <path d="M95 100 Q70 85 55 65" stroke="#c49b95" stroke-width="1.5" fill="none"/>
+          <!-- Blossoms -->
+          <circle cx="100" cy="30" r="10" fill="#f8bbd0" opacity="0.85"/>
+          <circle cx="100" cy="30" r="5" fill="#f48fb1" opacity="0.9"/>
+          <circle cx="30" cy="160" r="8" fill="#fce4ec" opacity="0.8"/>
+          <circle cx="30" cy="160" r="4" fill="#f8bbd0" opacity="0.85"/>
+          <circle cx="145" cy="110" r="9" fill="#f8bbd0" opacity="0.8"/>
+          <circle cx="145" cy="110" r="4.5" fill="#f48fb1" opacity="0.85"/>
+          <circle cx="55" cy="65" r="7" fill="#fce4ec" opacity="0.75"/>
+          <circle cx="90" cy="90" r="6" fill="#f8bbd0" opacity="0.7"/>
+          <circle cx="80" cy="200" r="8" fill="#fce4ec" opacity="0.8"/>
+          <circle cx="80" cy="200" r="4" fill="#f48fb1" opacity="0.85"/>
+        </svg>
+      </div>
+      <p class="decor-haiku">桜の花びら<br>風に舞い降りて<br>春の夢</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h1 class="brand">花 見</h1>
+        <p class="subtitle">欢迎回来</p>
+      </div>
+
+      <form class="form" id="loginForm" novalidate>
+        <div class="field">
+          <label class="field-label" for="login">邮箱或用户名</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" id="login" class="input" placeholder="输入邮箱或用户名" autocomplete="email" autofocus required>
+          </div>
+          <span class="field-error" id="loginError"></span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="password">密码</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input type="password" id="password" class="input" placeholder="输入密码" autocomplete="current-password" required>
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="显示密码">
+              <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="eye-icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <span class="field-error" id="passwordError"></span>
+        </div>
+
+        <div class="form-row">
+          <label class="check-label">
+            <input type="checkbox" id="remember" class="check-input">
+            <span class="check-mark"></span>
+            记住我
+          </label>
+          <button type="button" class="forgot-link" id="forgotBtn">忘记密码？</button>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="btn-text">登 录</span>
+          <span class="btn-loader"></span>
+        </button>
+      </form>
+
+      <p class="card-footer">
+        还没有账户？<a href="RegisterPage.html" class="footer-link">新用户注册 →</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="LoginPage.js"></script>
+</body>
+</html>
