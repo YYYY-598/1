@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/epoll.h>
@@ -12,7 +13,7 @@
 #define PORT 9999
 #define MAX_EVENTS 1024
 
-struct TaskArg { int fd; };
+struct TaskArg { int fd; int lfd; int epfd; };
 
 int main()
 {
@@ -49,14 +50,27 @@ int main()
         for (int i = 0; i < n; i++) {
             int fd = evs[i].data.fd;
             if (fd == lfd) {
-                int cfd = accept(lfd, NULL, NULL);
-                if (cfd < 0) continue;
-                ev.events = EPOLLIN | EPOLLET;
-                ev.data.fd = cfd;
-                epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &ev);
+                epoll_ctl(epfd, EPOLL_CTL_DEL, lfd, NULL);
+                TaskArg* arg = new TaskArg{0, lfd, epfd};
+                pool.addTask([](void* a) {
+                    TaskArg* t = (TaskArg*)a;
+                    while (1) {
+                        int cfd = accept(t->lfd, NULL, NULL);
+                        if (cfd < 0) break;
+                        struct epoll_event ev;
+                        ev.events = EPOLLIN | EPOLLET;
+                        ev.data.fd = cfd;
+                        epoll_ctl(t->epfd, EPOLL_CTL_ADD, cfd, &ev);
+                    }
+                    struct epoll_event ev;
+                    ev.events = EPOLLIN;
+                    ev.data.fd = t->lfd;
+                    epoll_ctl(t->epfd, EPOLL_CTL_ADD, t->lfd, &ev);
+                    delete t;
+                }, arg);
             } else {
                 epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
-                TaskArg* arg = new TaskArg{fd};
+                TaskArg* arg = new TaskArg{fd, 0, 0};
                 pool.addTask([](void* a) {
                     TaskArg* t = (TaskArg*)a;
                     HttpServer::handle(t->fd);
