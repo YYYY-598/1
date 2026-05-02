@@ -152,7 +152,7 @@
       if (res.ok) {
         submitBtn.classList.add('success-state');
         btnText.textContent = '注册成功';
-        setTimeout(function () { window.location.href = 'IndexPage.html'; }, 600);
+        setTimeout(function () { window.location.href = 'LoginPage.html'; }, 600);
       } else {
         if (res.status === 409) showError(usernameInput, usernameError, res.message);
         else showError(passwordInput, passwordError, res.message);

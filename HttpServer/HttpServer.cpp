@@ -2,6 +2,8 @@
 #include "../HttpParser/HttpParser.h"
 #include "../ConnectionPool/ConnectionPool.h"
 #include <unistd.h>
+#include <sys/socket.h>
+#include <memory>
 #include <json/json.h>
 #include <iostream>
 using namespace std;
@@ -25,33 +27,41 @@ static string jwt(int uid) {
     return "jwt_" + to_string(uid);
 }
 
+static const char* CORS =
+    "Access-Control-Allow-Origin: *\r\n"
+    "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n"
+    "Access-Control-Allow-Headers: Content-Type, Authorization\r\n";
+
 static void err(int fd, int code, const string& msg) {
-    char buf[256];
+    char buf[512];
     int n = snprintf(buf, sizeof(buf),
-        "HTTP/1.1 %d\r\nContent-Type: application/json; charset=utf-8\r\n"
+        "HTTP/1.1 %d\r\n%s"
+        "Content-Type: application/json; charset=utf-8\r\n"
         "Content-Length: %zu\r\nConnection: close\r\n\r\n"
         "{\"code\":%d,\"message\":\"%s\",\"data\":null}",
-        code, 50 + msg.size(), code, msg.c_str());
+        code, CORS, 50 + msg.size(), code, msg.c_str());
     send(fd, buf, n, 0);
 }
 
 static void ok(int fd, int code, const Json::Value& v) {
     Json::StreamWriterBuilder w;
     string body = Json::writeString(w, v);
-    char hdr[128];
+    char hdr[256];
     int n = snprintf(hdr, sizeof(hdr),
-        "HTTP/1.1 %d\r\nContent-Type: application/json; charset=utf-8\r\n"
+        "HTTP/1.1 %d\r\n%s"
+        "Content-Type: application/json; charset=utf-8\r\n"
         "Content-Length: %zu\r\nConnection: close\r\n\r\n",
-        code, body.size());
+        code, CORS, body.size());
     send(fd, hdr, n, 0);
     send(fd, body.c_str(), body.size(), 0);
 }
 
 static bool parse(const string& raw, Json::Value& v) {
     Json::CharReaderBuilder b;
+    unique_ptr<Json::CharReader> r(b.newCharReader());
     string e;
-    istringstream ss(raw);
-    return Json::parseFromStream(b, ss, &v, &e);
+    r->parse(raw.c_str(), raw.c_str() + raw.size(), &v, &e);
+    return v.isObject();
 }
 
 /* ---- 主入口 ---- */
@@ -77,17 +87,27 @@ bool HttpServer::readAll(int fd, string& out)
     out.clear();
     while (true) {
         ssize_t n = recv(fd, buf, sizeof(buf), 0);
-        if (n < 0)  return !out.empty();
+        if (n < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) continue;
+            return !out.empty();
+        }
         if (n == 0) return !out.empty();
         out.append(buf, n);
-        // 简单判断：如果 body 收完了就停
+
         size_t hdrEnd = out.find("\r\n\r\n");
         if (hdrEnd == string::npos) continue;
-        // 找 Content-Length
-        size_t cl = out.find("Content-Length:");
-        if (cl == string::npos) cl = out.find("content-length:");
-        if (cl == string::npos) return true;
-        int len = atoi(out.c_str() + cl + 15);
+
+        // 只在 header 区域找 Content-Length
+        string hdr = out.substr(0, hdrEnd);
+        size_t clPos = hdr.find("Content-Length:");
+        if (clPos == string::npos) clPos = hdr.find("content-length:");
+        if (clPos == string::npos) return true;  // 无 body，报文收完
+
+        // "Content-Length: 123" → 跳过冒号和空格
+        const char* p = hdr.c_str() + clPos + 15; // 指向冒号
+        while (*p == ':' || *p == ' ') p++;
+        int len = atoi(p);
+
         if ((int)(out.size() - hdrEnd - 4) >= len) return true;
     }
 }
@@ -95,6 +115,11 @@ bool HttpServer::readAll(int fd, string& out)
 void HttpServer::route(int fd, const string& method,
                        const string& path, const string& body)
 {
+    if (method == "OPTIONS") {
+        string rsp = "HTTP/1.1 204\r\n" + string(CORS) + "Content-Length: 0\r\n\r\n";
+        send(fd, rsp.c_str(), rsp.size(), 0);
+        return;
+    }
     if (method == "POST" && path == "/api/auth/register")
         handleRegister(fd, body);
     else if (method == "POST" && path == "/api/auth/login")

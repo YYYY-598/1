@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/epoll.h>
@@ -43,7 +44,7 @@ int main()
     epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &ev);
 
     ThreadPool pool(4, 32);
-    ConnectionPool* db = ConnectionPool::getConnectPool();
+    ConnectionPool::getConnectPool();
 
     while (1) {
         int n = epoll_wait(epfd, evs, MAX_EVENTS, -1);
@@ -52,11 +53,12 @@ int main()
             if (fd == lfd) {
                 epoll_ctl(epfd, EPOLL_CTL_DEL, lfd, NULL);
                 TaskArg* arg = new TaskArg{0, lfd, epfd};
-                pool.addTask([](void* a) {
+                Task t1([](void* a) {
                     TaskArg* t = (TaskArg*)a;
                     while (1) {
                         int cfd = accept(t->lfd, NULL, NULL);
                         if (cfd < 0) break;
+                        fcntl(cfd, F_SETFL, O_NONBLOCK);
                         struct epoll_event ev;
                         ev.events = EPOLLIN | EPOLLET;
                         ev.data.fd = cfd;
@@ -68,15 +70,17 @@ int main()
                     epoll_ctl(t->epfd, EPOLL_CTL_ADD, t->lfd, &ev);
                     delete t;
                 }, arg);
+                pool.addTask(t1);
             } else {
                 epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
                 TaskArg* arg = new TaskArg{fd, 0, 0};
-                pool.addTask([](void* a) {
+                Task t2([](void* a) {
                     TaskArg* t = (TaskArg*)a;
                     HttpServer::handle(t->fd);
                     close(t->fd);
                     delete t;
                 }, arg);
+                pool.addTask(t2);
             }
         }
     }

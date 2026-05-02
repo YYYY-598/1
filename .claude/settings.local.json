@@ -1,4 +1,38 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(g++ -std=c++11 -c main.cpp -I.)",
+      "Bash(g++ -std=c++11 -fsyntax-only HttpParser/HttpParser.cpp -I.)",
+      "Bash(g++ -std=c++11 -fsyntax-only HttpServer/HttpServer.cpp -I.)",
+      "Read(//tmp/**)",
+      "Bash(g++ -std=c++11 debug2.cpp HttpParser/HttpParser.cpp -I/home/yty/httpserver -o debug2)",
+      "Bash(echo \"compile: $?\")",
+      "Bash(./debug2)",
+      "Bash(echo \"run: $?\")",
+      "Bash(pkill -9 -f httpserver)",
+      "Bash(fuser -k 9999/tcp)",
+      "Bash(g++ -std=c++11 -Wall main.cpp HttpServer/HttpServer.cpp HttpParser/HttpParser.cpp ConnectionPool/ConnectionPool.cpp ConnectionPool/MysqlConn.cpp threadpool/ThreadPool.cpp threadpool/TaskQueue.cpp -I. -I/usr/include/mysql -I/usr/include/jsoncpp -L/usr/lib/x86_64-linux-gnu -lmysqlclient -ljsoncpp -lpthread -o httpserver)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(./httpserver)",
+      "Bash(echo \"build=$?\")",
+      "Bash(nc -w 2 localhost 9999)",
+      "Bash(nc -w 3 localhost 9999)",
+      "Bash(mysql -u root -p123456 horizon -e \"SELECT * FROM users;\")",
+      "Bash(kill %1)",
+      "Bash(time timeout *)",
+      "Bash(timeout 10 nc localhost 9999)",
+      "Bash(timeout 8 nc localhost 9999)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(pkill -9 httpserver)",
+      "Bash(timeout 5 nc localhost 9999)",
+      "Bash(apt list *)",
+      "Bash(apt-get install *)",
+      "Bash(python3 /home/yty/httpserver/bench.py 1 10 50 100 200)",
+      "Bash(git add *)",
+      "Bash(git reset *)",
+      "Bash(git commit *)"
+    ]
+  },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,

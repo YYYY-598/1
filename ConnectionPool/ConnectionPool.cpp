@@ -2,7 +2,7 @@
 #include <json/json.h>
 #include <fstream>
 #include <thread>
-using namespace Json;
+using namespace std;
 ConnectionPool* ConnectionPool::getConnectPool()
 {
     static ConnectionPool pool;
@@ -11,10 +11,12 @@ ConnectionPool* ConnectionPool::getConnectPool()
 
 bool ConnectionPool::parseJsonFile()
 {
-    ifstream ifs("dbconf.json");
-    Reader rd;
-    Value root;
-    rd.parse(ifs, root);
+    ifstream ifs("ConnectionPool/dbconf.json");
+    Json::CharReaderBuilder builder;
+    Json::Value root;
+    string errs;
+    if (!Json::parseFromStream(builder, ifs, &root, &errs))
+        return false;
     if (root.isObject())
     {
         m_ip = root["ip"].asString();
@@ -84,7 +86,6 @@ shared_ptr<MysqlConn> ConnectionPool::getConnection()
         {
             if (m_connectionQ.empty())
             {
-                //return nullptr;
                 continue;
             }
         }

@@ -1,7 +1,7 @@
 var ApiClient = (function () {
   'use strict';
 
-  var BASE  = '/api';
+  var BASE  = 'http://localhost:9999/api';
   var USER_KEY = 'sakura_user';
   var token = null;
 

@@ -133,8 +133,6 @@ void* ThreadPool::worker(void* arg)
         // 执行任务
         cout << "thread " << to_string(pthread_self()) << " start working..." << endl;
         task.function(task.arg);
-        delete task.arg;
-        task.arg = nullptr;
 
         // 任务处理结束
         cout << "thread " << to_string(pthread_self()) << " end working...";
