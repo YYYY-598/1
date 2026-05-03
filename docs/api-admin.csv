@@ -1,0 +1,9 @@
+方法,路径,说明,需登录,请求体,响应
+POST,/api/auth/login,管理员登录,否,"{ email, password }","{ token, user }"
+GET,/api/admin/users?page&pageSize,用户列表（分页）,是,"-","{ items: [{ id, username, email, role, is_banned, created_at }], total, page, pageSize }"
+PUT,/api/admin/users/:id/ban,封禁/解封用户,是,"{ is_banned }","{ id, username, is_banned, ... }"
+POST,/api/admin/boards,创建板块,是,"{ name, description }","{ id, name, description, created_at }"
+PUT,/api/admin/boards/:id,编辑板块,是,"{ name, description }","{ id, name, description, created_at }"
+DELETE,/api/admin/boards/:id,删除板块（级联删帖）,是,-,-
+DELETE,/api/admin/posts/:id,删除任意帖子,是,-,-
+DELETE,/api/admin/comments/:id,删除任意评论,是,-,-

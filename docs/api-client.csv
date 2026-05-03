@@ -1,0 +1,12 @@
+方法,路径,说明,需登录,请求体,响应
+POST,/api/auth/register,注册,否,"{ username, email, password }","{ token, user }"
+POST,/api/auth/login,登录,否,"{ email, password }","{ token, user }"
+GET,/api/boards,板块列表,否,-,"[{ id, name, description, created_at }]"
+GET,/api/boards/:id,板块详情,否,-,"{ id, name, description, created_at }"
+GET,/api/boards/:boardId/posts?page&pageSize,帖子列表（分页含摘要）,否,-,"{ items: [{ id, title, summary, username, like_count, comment_count, created_at }], total, page, pageSize }"
+GET,/api/posts/:id,帖子详情（含评论）,否,-,"{ id, title, content, username, user_id, board_id, board_name, like_count, liked, created_at, updated_at, comments: [{ id, content, username, user_id, created_at }] }"
+POST,/api/boards/:boardId/posts,发帖,是,"{ title, content }","{ id, title, content, ... }"
+DELETE,/api/posts/:id,删帖（本人或管理员）,是,-,-
+POST,/api/posts/:postId/comments,发表评论,是,"{ content }","{ id, content, username, user_id, created_at }"
+DELETE,/api/comments/:id,删评论（本人或管理员）,是,-,-
+POST,/api/posts/:id/like,点赞/取消（toggle）,是,-,"{ liked, like_count }"
