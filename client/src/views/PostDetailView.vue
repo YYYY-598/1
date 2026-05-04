@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getPost, deletePost, type PostDetail } from '../api/posts'
-import { getComments, createComment, deleteComment, type Comment } from '../api/comments'
+import { createComment, deleteComment, type Comment } from '../api/comments'
 import { toggleLike } from '../api/likes'
 import { useAuth } from '../stores/useAuth'
 import CommentItem from '../components/CommentItem.vue'
@@ -22,12 +22,9 @@ const postId = computed(() => Number(route.params.postId))
 async function loadData() {
   loading.value = true
   try {
-    const [postRes, commentsRes] = await Promise.all([
-      getPost(postId.value),
-      getComments(postId.value),
-    ])
+    const postRes = await getPost(postId.value)
     post.value = postRes.data
-    comments.value = commentsRes.data
+    comments.value = postRes.data.comments || []
   } catch {
     // Handle error
   } finally {

@@ -20,6 +20,8 @@ export class AuthService {
         username: user.username,
         email: user.email,
         role: user.role,
+        avatar_url: user.avatar_url,
+        signature: user.signature,
       },
     };
   }
@@ -44,6 +46,8 @@ export class AuthService {
         username: user.username,
         email: user.email,
         role: user.role,
+        avatar_url: user.avatar_url,
+        signature: user.signature,
       },
     };
   }

@@ -20,3 +20,9 @@ Thumbs.db
 admin/node_modules/
 client/node_modules/
 server/node_modules/
+
+uploads/
+server/uploads/
+
+*.tmp
+*.temp

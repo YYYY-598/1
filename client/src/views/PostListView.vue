@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getPosts, type PostSummary } from '../api/posts'
 import { getBoard, type Board } from '../api/boards'
@@ -48,36 +48,6 @@ watch(() => route.params.boardId, () => {
   page.value = 1
   loadPosts()
 })
-
-const showNewPost = ref(false)
-const newTitle = ref('')
-const newContent = ref('')
-const submitLoading = ref(false)
-const postError = ref('')
-
-async function handleCreatePost() {
-  postError.value = ''
-  if (!newTitle.value.trim() || !newContent.value.trim()) {
-    postError.value = '请填写标题和内容'
-    return
-  }
-  submitLoading.value = true
-  try {
-    const { createPost } = await import('../api/posts')
-    const res = await createPost(boardId.value, {
-      title: newTitle.value.trim(),
-      content: newContent.value.trim(),
-    })
-    showNewPost.value = false
-    newTitle.value = ''
-    newContent.value = ''
-    router.push(`/post/${res.data.id}`)
-  } catch (e: any) {
-    postError.value = e.response?.data?.message || '发帖失败'
-  } finally {
-    submitLoading.value = false
-  }
-}
 </script>
 
 <template>
@@ -98,40 +68,12 @@ async function handleCreatePost() {
         </div>
         <button
           v-if="isLoggedIn"
-          @click="showNewPost = !showNewPost"
+          @click="router.push(`/board/${boardId}/new`)"
           class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-ink)] text-white text-sm hover:bg-[var(--color-ink-light)] transition-colors cursor-pointer shrink-0"
         >
           <Plus :size="16" />
           <span>发帖</span>
         </button>
-      </div>
-    </div>
-
-    <!-- 发帖表单 -->
-    <div v-if="showNewPost" class="bg-white rounded-xl border border-[var(--color-paper-darker)] p-5 mb-6">
-      <input
-        v-model="newTitle"
-        type="text"
-        placeholder="标题"
-        class="w-full rounded-lg border border-[var(--color-paper-darker)] bg-[var(--color-paper)] px-4 py-2.5 text-sm mb-3 placeholder:text-[var(--color-ink-muted)] focus:outline-none focus:border-[var(--color-ink)] focus:bg-white transition-colors"
-      />
-      <textarea
-        v-model="newContent"
-        placeholder="写下你想分享的内容..."
-        rows="4"
-        class="w-full rounded-lg border border-[var(--color-paper-darker)] bg-[var(--color-paper)] px-4 py-2.5 text-sm resize-none placeholder:text-[var(--color-ink-muted)] focus:outline-none focus:border-[var(--color-ink)] focus:bg-white transition-colors"
-      ></textarea>
-      <p v-if="postError" class="text-sm text-[var(--color-cinnabar)] mt-2">{{ postError }}</p>
-      <div class="flex items-center justify-end gap-2 mt-3">
-        <button
-          @click="showNewPost = false"
-          class="px-4 py-1.5 text-sm rounded-md border border-[var(--color-paper-darker)] hover:border-[var(--color-ink-muted)] transition-colors cursor-pointer"
-        >取消</button>
-        <button
-          @click="handleCreatePost"
-          :disabled="submitLoading"
-          class="px-4 py-1.5 text-sm rounded-md bg-[var(--color-ink)] text-white hover:bg-[var(--color-ink-light)] disabled:opacity-50 transition-colors cursor-pointer"
-        >{{ submitLoading ? '发布中...' : '发布' }}</button>
       </div>
     </div>
 

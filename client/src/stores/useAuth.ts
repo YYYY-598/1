@@ -5,6 +5,8 @@ interface User {
   username: string
   email: string
   role: string
+  avatar_url?: string
+  signature?: string
 }
 
 const user = ref<User | null>(null)
@@ -31,6 +33,12 @@ export function useAuth() {
     localStorage.setItem('user', JSON.stringify(u))
   }
 
+  function updateUser(patch: Partial<User>) {
+    if (!user.value) return
+    user.value = { ...user.value, ...patch }
+    localStorage.setItem('user', JSON.stringify(user.value))
+  }
+
   function setToken(token: string) {
     localStorage.setItem('token', token)
   }
@@ -47,6 +55,7 @@ export function useAuth() {
     isAdmin,
     setAuth,
     setToken,
+    updateUser,
     logout,
   }
 }

@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post as HttpPost,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -15,6 +16,7 @@ import { PostsService } from './posts.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 interface AuthenticatedRequest extends Request {
@@ -49,6 +51,16 @@ export class PostsController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.postsService.create(boardId, req.user.id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('posts/:id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdatePostDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.postsService.update(id, req.user.id, req.user.role, dto);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -24,9 +24,24 @@ const router = createRouter({
       component: () => import('../views/PostListView.vue'),
     },
     {
+      path: '/board/:boardId/new',
+      name: 'create-post',
+      component: () => import('../views/CreatePostView.vue'),
+    },
+    {
+      path: '/post/:postId/edit',
+      name: 'edit-post',
+      component: () => import('../views/EditPostView.vue'),
+    },
+    {
       path: '/post/:postId',
       name: 'post',
       component: () => import('../views/PostDetailView.vue'),
+    },
+    {
+      path: '/me',
+      name: 'me',
+      component: () => import('../views/MeView.vue'),
     },
     {
       path: '/:pathMatch(.*)*',

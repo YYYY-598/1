@@ -30,6 +30,12 @@ export class User {
   @Column({ type: 'tinyint', default: 0 })
   is_banned!: boolean;
 
+  @Column({ type: 'varchar', length: 255, default: '' })
+  avatar_url!: string;
+
+  @Column({ type: 'varchar', length: 200, default: '' })
+  signature!: string;
+
   @CreateDateColumn()
   created_at!: Date;
 

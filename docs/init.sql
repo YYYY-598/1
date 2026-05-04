@@ -61,7 +61,7 @@ CREATE TABLE comment (
 -- ============================================================
 -- 点赞（user_id + post_id 联合唯一，防重复点赞）
 -- ============================================================
-CREATE TABLE `like` (
+CREATE TABLE post_like (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     user_id     INT      NOT NULL,
     post_id     INT      NOT NULL,
@@ -71,3 +71,11 @@ CREATE TABLE `like` (
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- ============================================================
+-- 增量变更：用户个人中心字段
+-- 已执行过旧版 init.sql 时，继续执行下面语句即可
+-- ============================================================
+ALTER TABLE user
+    ADD COLUMN avatar_url VARCHAR(255) NOT NULL DEFAULT '' AFTER is_banned,
+    ADD COLUMN signature VARCHAR(200) NOT NULL DEFAULT '' AFTER avatar_url;

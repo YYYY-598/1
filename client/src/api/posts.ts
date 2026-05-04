@@ -22,6 +22,13 @@ export interface PostDetail {
   liked: boolean
   created_at: string
   updated_at: string
+  comments?: Array<{
+    id: number
+    content: string
+    username: string
+    user_id: number
+    created_at: string
+  }>
 }
 
 export interface PaginatedResponse<T> {
@@ -43,6 +50,10 @@ export function getPost(id: number) {
 
 export function createPost(boardId: number, data: { title: string; content: string }) {
   return request.post<PostDetail>(`/boards/${boardId}/posts`, data)
+}
+
+export function updatePost(id: number, data: { title: string; content: string }) {
+  return request.put<PostDetail>(`/posts/${id}`, data)
 }
 
 export function deletePost(id: number) {

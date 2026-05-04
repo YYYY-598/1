@@ -12,6 +12,7 @@ import { User, UserRole } from '../users/user.entity';
 import { Like } from '../likes/like.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -119,6 +120,31 @@ export class PostsService {
       board_id: saved.board_id,
       like_count: saved.like_count,
       created_at: saved.created_at,
+      updated_at: saved.updated_at,
+    };
+  }
+
+  async update(id: number, currentUserId: number, currentUserRole: string, dto: UpdatePostDto) {
+    const post = await this.postRepo.findOne({ where: { id } });
+    if (!post) {
+      throw new NotFoundException('帖子不存在');
+    }
+
+    const canEdit = post.user_id === currentUserId || currentUserRole === UserRole.ADMIN;
+    if (!canEdit) {
+      throw new ForbiddenException('无权限编辑该帖子');
+    }
+
+    post.title = dto.title.trim();
+    post.content = dto.content.trim();
+    const saved = await this.postRepo.save(post);
+
+    return {
+      id: saved.id,
+      title: saved.title,
+      content: saved.content,
+      board_id: saved.board_id,
+      user_id: saved.user_id,
       updated_at: saved.updated_at,
     };
   }

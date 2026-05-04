@@ -5,7 +5,7 @@ import {
 import { User } from '../users/user.entity';
 import { Post } from '../posts/post.entity';
 
-@Entity('like')
+@Entity('post_like')
 @Unique(['user_id', 'post_id'])
 export class Like {
   @PrimaryGeneratedColumn()

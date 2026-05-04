@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '../stores/useAuth'
-import { MessageCircle, LogOut, User } from 'lucide-vue-next'
+import { House, LogOut, MessageCircle } from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
@@ -33,10 +33,31 @@ const isTransparent = computed(() => {
 
       <div class="flex items-center gap-4 text-sm">
         <template v-if="isLoggedIn">
-          <div class="flex items-center gap-2 text-[var(--color-ink-light)]">
-            <User :size="15" />
-            <span>{{ user?.username }}</span>
-          </div>
+          <router-link
+            to="/me"
+            class="flex items-center gap-2 rounded-full px-2 py-1 text-[var(--color-ink-light)] hover:bg-[var(--color-paper)] transition-colors"
+          >
+            <div
+              v-if="user?.avatar_url"
+              class="w-8 h-8 rounded-full overflow-hidden border border-[var(--color-paper-darker)] bg-white shrink-0"
+            >
+              <img :src="user.avatar_url" :alt="user.username" class="w-full h-full object-cover" />
+            </div>
+            <div
+              v-else
+              class="w-8 h-8 rounded-full bg-[var(--color-sage-soft)] text-[var(--color-sage)] flex items-center justify-center text-xs font-semibold shrink-0"
+            >
+              {{ user?.username?.charAt(0).toUpperCase() }}
+            </div>
+            <span class="hidden sm:inline">{{ user?.username }}</span>
+          </router-link>
+          <router-link
+            to="/me"
+            class="flex items-center gap-1.5 text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors cursor-pointer"
+          >
+            <House :size="14" />
+            <span>我的</span>
+          </router-link>
           <button
             @click="handleLogout"
             class="flex items-center gap-1.5 text-[var(--color-ink-muted)] hover:text-[var(--color-cinnabar)] transition-colors cursor-pointer"
