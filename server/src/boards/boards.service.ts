@@ -12,7 +12,7 @@ export class BoardsService {
   ) {}
 
   findAll(): Promise<Board[]> {
-    return this.boardRepo.find({ order: { created_at: 'DESC' } });
+    return this.boardRepo.find({ order: { sort_order: 'ASC', created_at: 'ASC', id: 'ASC' } });
   }
 
   async findById(id: number): Promise<Board> {
@@ -30,7 +30,16 @@ export class BoardsService {
       throw new ConflictException('板块名称已存在');
     }
 
-    const board = this.boardRepo.create({ name, description });
+    const maxOrder = await this.boardRepo
+      .createQueryBuilder('board')
+      .select('MAX(board.sort_order)', 'max')
+      .getRawOne<{ max: string | null }>();
+
+    const board = this.boardRepo.create({
+      name,
+      description,
+      sort_order: Number(maxOrder?.max || 0) + 10,
+    });
     return this.boardRepo.save(board);
   }
 

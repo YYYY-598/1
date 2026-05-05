@@ -19,6 +19,7 @@ async function handleSubmit() {
     error.value = '请填写所有字段'
     return
   }
+
   loading.value = true
   try {
     const res = await adminLogin({ email: email.value, password: password.value })
@@ -44,7 +45,7 @@ async function handleSubmit() {
         <div class="w-12 h-12 rounded-xl bg-[var(--color-ink)] flex items-center justify-center mx-auto mb-4">
           <Shield :size="22" class="text-white" />
         </div>
-        <h1 class="text-xl font-bold">论坛管理后台</h1>
+        <h1 class="text-xl font-bold">YY论坛管理后台</h1>
         <p class="text-sm text-[var(--color-ink-muted)] mt-1">请使用管理员账号登录</p>
       </div>
 
@@ -54,7 +55,7 @@ async function handleSubmit() {
           <input
             v-model="email"
             type="email"
-            placeholder="admin@forum.com"
+            placeholder="admin@yy.com"
             class="w-full rounded-lg border border-[var(--color-paper-darker)] bg-[var(--color-paper)] px-4 py-2.5 text-sm placeholder:text-[var(--color-ink-muted)] focus:outline-none focus:border-[var(--color-ink)] focus:bg-white transition-colors"
           />
         </div>

@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './post.entity';
+import { PostImage } from './post-image.entity';
 import { Comment } from '../comments/comment.entity';
 import { Board } from '../boards/board.entity';
 import { User, UserRole } from '../users/user.entity';
@@ -19,6 +20,8 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepo: Repository<Post>,
+    @InjectRepository(PostImage)
+    private readonly postImageRepo: Repository<PostImage>,
     @InjectRepository(Comment)
     private readonly commentRepo: Repository<Comment>,
     @InjectRepository(Board)
@@ -29,25 +32,93 @@ export class PostsService {
     private readonly likeRepo: Repository<Like>,
   ) {}
 
-  async findByBoard(boardId: number, page: number, pageSize: number) {
-    const [items, total] = await this.postRepo.findAndCount({
-      where: { board_id: boardId },
-      relations: ['user'],
-      order: { created_at: 'DESC' },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
+  private toFeedItem(post: Post & { comment_count?: number }) {
+    const images = (post.images || [])
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((image) => image.url);
 
     return {
-      items: items.map((post) => ({
-        id: post.id,
-        title: post.title,
-        summary: post.content.slice(0, 200),
-        username: post.user.username,
-        like_count: post.like_count,
-        comment_count: 0, // TODO: 后续实现评论计数
-        created_at: post.created_at,
-      })),
+      id: post.id,
+      title: post.title,
+      summary: post.content.slice(0, 200),
+      cover_url: images[0] || '',
+      images,
+      username: post.user.username,
+      user_id: post.user_id,
+      avatar_url: post.user.avatar_url,
+      board_id: post.board_id,
+      board_name: post.board.name,
+      like_count: post.like_count,
+      comment_count: post.comment_count || 0,
+      created_at: post.created_at,
+    };
+  }
+
+  private feedQuery() {
+    return this.postRepo
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .leftJoinAndSelect('post.board', 'board')
+      .leftJoinAndSelect('post.images', 'images')
+      .loadRelationCountAndMap('post.comment_count', 'post.comments');
+  }
+
+  async findByBoard(boardId: number, page: number, pageSize: number) {
+    const [items, total] = await this.feedQuery()
+      .where('post.board_id = :boardId', { boardId })
+      .orderBy('post.created_at', 'DESC')
+      .addOrderBy('images.sort_order', 'ASC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+
+    return {
+      items: items.map((post) => this.toFeedItem(post)),
+      total,
+      page,
+      pageSize,
+    };
+  }
+
+  async findFeed(page: number, pageSize: number, boardId?: number) {
+    const query = this.feedQuery()
+      .orderBy('post.created_at', 'DESC')
+      .addOrderBy('images.sort_order', 'ASC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize);
+
+    if (boardId) {
+      query.where('post.board_id = :boardId', { boardId });
+    }
+
+    const [items, total] = await query.getManyAndCount();
+
+    return {
+      items: items.map((post) => this.toFeedItem(post)),
+      total,
+      page,
+      pageSize,
+    };
+  }
+
+  async searchPosts(q: string, page: number, pageSize: number) {
+    const keyword = q.trim();
+    if (!keyword) {
+      return { items: [], total: 0, page, pageSize };
+    }
+
+    const [items, total] = await this.feedQuery()
+      .where('post.title LIKE :keyword OR post.content LIKE :keyword', {
+        keyword: `%${keyword}%`,
+      })
+      .orderBy('post.created_at', 'DESC')
+      .addOrderBy('images.sort_order', 'ASC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+
+    return {
+      items: items.map((post) => this.toFeedItem(post)),
       total,
       page,
       pageSize,
@@ -57,7 +128,7 @@ export class PostsService {
   async findOne(id: number) {
     const post = await this.postRepo.findOne({
       where: { id },
-      relations: ['user', 'board', 'comments', 'comments.user'],
+      relations: ['user', 'board', 'images', 'comments', 'comments.user'],
       order: {
         comments: {
           created_at: 'ASC',
@@ -74,9 +145,14 @@ export class PostsService {
       title: post.title,
       content: post.content,
       username: post.user.username,
+      avatar_url: post.user.avatar_url,
       user_id: post.user_id,
       board_id: post.board_id,
       board_name: post.board.name,
+      cover_url: post.images?.[0]?.url || '',
+      images: (post.images || [])
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map((image) => image.url),
       like_count: post.like_count,
       liked: false,
       created_at: post.created_at,
@@ -85,6 +161,7 @@ export class PostsService {
         id: comment.id,
         content: comment.content,
         username: comment.user.username,
+        avatar_url: comment.user.avatar_url,
         user_id: comment.user_id,
         created_at: comment.created_at,
       })),
@@ -164,6 +241,58 @@ export class PostsService {
     return { success: true };
   }
 
+  async addImages(postId: number, currentUserId: number, currentUserRole: string, files: Array<{ filename: string }>) {
+    const post = await this.postRepo.findOne({ where: { id: postId } });
+    if (!post) {
+      throw new NotFoundException('帖子不存在');
+    }
+
+    const canEdit = post.user_id === currentUserId || currentUserRole === UserRole.ADMIN;
+    if (!canEdit) {
+      throw new ForbiddenException('无权限上传该帖子的图片');
+    }
+
+    const maxOrder = await this.postImageRepo
+      .createQueryBuilder('image')
+      .select('MAX(image.sort_order)', 'max')
+      .where('image.post_id = :postId', { postId })
+      .getRawOne<{ max: string | null }>();
+
+    const startOrder = Number(maxOrder?.max || 0);
+    const images = files.map((file, index) => this.postImageRepo.create({
+      post_id: postId,
+      url: `/uploads/posts/${file.filename}`,
+      sort_order: startOrder + (index + 1) * 10,
+    }));
+
+    const saved = await this.postImageRepo.save(images);
+    return {
+      images: saved.map((image) => ({
+        id: image.id,
+        url: image.url,
+        sort_order: image.sort_order,
+      })),
+    };
+  }
+
+  async removeImage(postId: number, imageId: number, currentUserId: number, currentUserRole: string) {
+    const image = await this.postImageRepo.findOne({
+      where: { id: imageId, post_id: postId },
+      relations: ['post'],
+    });
+    if (!image) {
+      throw new NotFoundException('图片不存在');
+    }
+
+    const canDelete = image.post.user_id === currentUserId || currentUserRole === UserRole.ADMIN;
+    if (!canDelete) {
+      throw new ForbiddenException('无权限删除该图片');
+    }
+
+    await this.postImageRepo.remove(image);
+    return { success: true };
+  }
+
   async removeAsAdmin(id: number) {
     const post = await this.postRepo.findOne({ where: { id } });
     if (!post) {
@@ -198,6 +327,7 @@ export class PostsService {
       id: saved.id,
       content: saved.content,
       username: user.username,
+      avatar_url: user.avatar_url,
       user_id: saved.user_id,
       created_at: saved.created_at,
     };

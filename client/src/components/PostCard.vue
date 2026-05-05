@@ -1,55 +1,53 @@
 <script setup lang="ts">
-import { MessageSquare, ThumbsUp, Clock } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { Heart } from 'lucide-vue-next'
 
-defineProps<{
+const props = defineProps<{
   id: number
   title: string
   summary: string
   username: string
+  avatarUrl?: string
+  coverUrl?: string
+  images?: string[]
   likeCount: number
   commentCount: number
   createdAt: string
 }>()
 
-function formatTime(date: string) {
-  const d = new Date(date)
-  const now = new Date()
-  const diff = now.getTime() - d.getTime()
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(diff / 3600000)
-  const days = Math.floor(diff / 86400000)
+const coverUrl = computed(() => {
+  return props.coverUrl || props.images?.[0] || ''
+})
 
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return `${minutes} 分钟前`
-  if (hours < 24) return `${hours} 小时前`
-  if (days < 30) return `${days} 天前`
-  return d.toLocaleDateString('zh-CN')
-}
+const initial = computed(() => props.username.charAt(0).toUpperCase())
 </script>
 
 <template>
   <router-link
     :to="`/post/${id}`"
-    class="block bg-[var(--color-card)] rounded-xl p-5 border border-[var(--color-paper-darker)] hover:border-[var(--color-paper-darker)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+    class="group mb-5 block break-inside-avoid"
   >
-    <h3 class="text-base font-semibold leading-snug mb-2 line-clamp-1">{{ title }}</h3>
-    <p class="text-sm text-[var(--color-ink-muted)] leading-relaxed mb-4 line-clamp-2">{{ summary }}</p>
-    <div class="flex items-center justify-between text-xs text-[var(--color-ink-muted)]">
-      <div class="flex items-center gap-4">
-        <span>{{ username }}</span>
-        <span class="flex items-center gap-1">
-          <Clock :size="12" />
-          {{ formatTime(createdAt) }}
-        </span>
-      </div>
-      <div class="flex items-center gap-3">
-        <span class="flex items-center gap-1">
-          <ThumbsUp :size="12" />
+    <div v-if="coverUrl" class="overflow-hidden rounded-2xl bg-[#f6f6f6]">
+      <img
+        :src="coverUrl"
+        :alt="title"
+        class="w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+      />
+    </div>
+    <div class="px-1.5 pt-2.5">
+      <h3 class="line-clamp-2 text-[15px] leading-6 text-[#111]">{{ title }}</h3>
+      <p class="line-clamp-1 text-xs leading-5 text-[#999]">{{ summary }}</p>
+      <div class="mt-2 flex items-center justify-between text-xs text-[#777]">
+        <div class="flex min-w-0 items-center gap-1.5">
+          <span class="grid h-5 w-5 shrink-0 place-items-center overflow-hidden rounded-full bg-[#f2f2f2] text-[10px] font-semibold text-[#ff2442]">
+            <img v-if="avatarUrl" :src="avatarUrl" :alt="username" class="h-full w-full object-cover" />
+            <span v-else>{{ initial }}</span>
+          </span>
+          <span class="truncate">{{ username }}</span>
+        </div>
+        <span class="flex shrink-0 items-center gap-1">
+          <Heart :size="14" />
           {{ likeCount }}
-        </span>
-        <span class="flex items-center gap-1">
-          <MessageSquare :size="12" />
-          {{ commentCount }}
         </span>
       </div>
     </div>

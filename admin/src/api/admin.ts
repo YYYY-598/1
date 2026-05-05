@@ -11,7 +11,7 @@ export function adminLogin(data: LoginParams) {
 }
 
 // 板块
-export interface Board { id: number; name: string; description: string; created_at: string }
+export interface Board { id: number; name: string; description: string; sort_order: number; created_at: string }
 export function getBoards() {
   return request.get<Board[]>('/boards')
 }

@@ -79,3 +79,52 @@ CREATE TABLE post_like (
 ALTER TABLE user
     ADD COLUMN avatar_url VARCHAR(255) NOT NULL DEFAULT '' AFTER is_banned,
     ADD COLUMN signature VARCHAR(200) NOT NULL DEFAULT '' AFTER avatar_url;
+
+-- ============================================================
+-- 增量变更：板块导航排序
+-- 已执行过旧版 init.sql 时，继续执行下面语句即可
+-- ============================================================
+ALTER TABLE board
+    ADD COLUMN sort_order INT NOT NULL DEFAULT 0 AFTER description;
+
+UPDATE board
+SET sort_order = id * 10
+WHERE sort_order = 0;
+
+-- ============================================================
+-- 增量变更：帖子图片
+-- 已执行过旧版 init.sql 时，继续执行下面语句即可
+-- ============================================================
+CREATE TABLE IF NOT EXISTS post_image (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    post_id     INT          NOT NULL,
+    url         VARCHAR(255) NOT NULL,
+    sort_order  INT          NOT NULL DEFAULT 0,
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_post_image_post_sort (post_id, sort_order, id),
+    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- ============================================================
+-- 增量变更：从第 82 行中断后继续执行
+-- 如果上面的 board.sort_order 已经执行失败或未执行，执行下面这段即可
+-- ============================================================
+SET @add_board_sort_order_sql := IF(
+    (
+        SELECT COUNT(*)
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'board'
+          AND COLUMN_NAME = 'sort_order'
+    ) = 0,
+    'ALTER TABLE board ADD COLUMN sort_order INT NOT NULL DEFAULT 0 AFTER description',
+    'SELECT 1'
+);
+PREPARE add_board_sort_order_stmt FROM @add_board_sort_order_sql;
+EXECUTE add_board_sort_order_stmt;
+DEALLOCATE PREPARE add_board_sort_order_stmt;
+
+UPDATE board
+SET sort_order = id * 10
+WHERE sort_order = 0;

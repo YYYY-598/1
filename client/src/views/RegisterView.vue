@@ -56,7 +56,7 @@ async function handleSubmit() {
           <div class="w-10 h-10 rounded-xl bg-[var(--color-cinnabar)] flex items-center justify-center">
             <MessageCircle :size="20" class="text-white" />
           </div>
-          <span class="text-xl font-bold">Forum</span>
+          <span class="text-xl font-bold">YY论坛</span>
         </div>
 
         <h2 class="text-2xl font-bold mb-2">注册</h2>
@@ -129,7 +129,7 @@ async function handleSubmit() {
           <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
             <MessageCircle :size="20" />
           </div>
-          <span class="text-xl font-bold tracking-tight">Forum</span>
+          <span class="text-xl font-bold tracking-tight">YY论坛</span>
         </div>
         <h1 class="text-3xl font-serif font-bold leading-tight mb-4">加入讨论</h1>
         <p class="text-base leading-relaxed opacity-60">注册账号，开始与大家分享你的想法和见解。</p>

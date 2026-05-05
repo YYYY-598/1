@@ -6,6 +6,7 @@ import { User } from '../users/user.entity';
 import { Board } from '../boards/board.entity';
 import { Comment } from '../comments/comment.entity';
 import { Like } from '../likes/like.entity';
+import { PostImage } from './post-image.entity';
 
 @Entity('post')
 export class Post {
@@ -46,4 +47,7 @@ export class Post {
 
   @OneToMany(() => Like, (like) => like.post)
   likes!: Like[];
+
+  @OneToMany(() => PostImage, (image) => image.post)
+  images!: PostImage[];
 }

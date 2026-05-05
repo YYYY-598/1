@@ -7,6 +7,7 @@ const props = defineProps<{
   id: number
   content: string
   username: string
+  avatarUrl?: string
   userId: number
   createdAt: string
 }>()
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 
 const { user } = useAuth()
 const canDelete = computed(() => user.value?.id === props.userId || user.value?.role === 'admin')
+const initial = computed(() => props.username.charAt(0).toUpperCase())
 
 function formatTime(date: string) {
   const d = new Date(date)
@@ -36,8 +38,14 @@ function formatTime(date: string) {
 
 <template>
   <div class="flex gap-3 py-4 border-b border-[var(--color-paper-dark)] last:border-0">
-    <div class="w-8 h-8 rounded-full bg-[var(--color-sage-soft)] text-[var(--color-sage)] flex items-center justify-center text-xs font-semibold shrink-0">
-      {{ username.charAt(0).toUpperCase() }}
+    <div class="w-8 h-8 rounded-full bg-[var(--color-sage-soft)] text-[var(--color-sage)] flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden">
+      <img
+        v-if="avatarUrl"
+        :src="avatarUrl"
+        :alt="username"
+        class="w-full h-full object-cover"
+      />
+      <span v-else>{{ initial }}</span>
     </div>
     <div class="flex-1 min-w-0">
       <div class="flex items-center justify-between mb-1.5">

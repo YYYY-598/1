@@ -26,14 +26,13 @@ function isActive(path: string) {
 
 <template>
   <div class="flex min-h-screen">
-    <!-- 侧边栏 -->
     <aside class="w-56 bg-[var(--color-sidebar)] text-white flex flex-col shrink-0">
       <div class="px-5 py-5 border-b border-white/10">
         <div class="flex items-center gap-2.5">
           <div class="w-7 h-7 rounded-md bg-[var(--color-cinnabar)] flex items-center justify-center">
             <Shield :size="14" />
           </div>
-          <span class="font-bold text-sm tracking-tight">管理后台</span>
+          <span class="font-bold text-sm tracking-tight">YY论坛后台</span>
         </div>
       </div>
 
@@ -63,7 +62,6 @@ function isActive(path: string) {
       </div>
     </aside>
 
-    <!-- 内容区 -->
     <main class="flex-1 min-w-0">
       <slot />
     </main>

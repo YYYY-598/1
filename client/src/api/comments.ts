@@ -4,6 +4,7 @@ export interface Comment {
   id: number
   content: string
   username: string
+  avatar_url: string
   user_id: number
   created_at: string
 }

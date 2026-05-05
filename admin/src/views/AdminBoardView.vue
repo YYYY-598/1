@@ -10,14 +10,19 @@ const editTarget = ref<Board | null>(null)
 const formName = ref('')
 const formDesc = ref('')
 const formError = ref('')
+const loadError = ref('')
 const saving = ref(false)
 
 async function load() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await getBoards()
     boards.value = res.data
-  } catch { /* ignore */ } finally { loading.value = false }
+  } catch (e: any) {
+    boards.value = []
+    loadError.value = e.response?.data?.message || '板块加载失败，请确认后端服务已启动'
+  } finally { loading.value = false }
 }
 
 function openCreate() {
@@ -69,7 +74,7 @@ onMounted(() => load())
     <div class="flex items-center justify-between mb-8">
       <div>
         <h1 class="text-2xl font-serif font-bold mb-1">板块管理</h1>
-        <p class="text-sm text-[var(--color-ink-muted)]">管理论坛的所有板块</p>
+        <p class="text-sm text-[var(--color-ink-muted)]">管理 YY论坛 的所有板块</p>
       </div>
       <button
         @click="openCreate"
@@ -78,6 +83,13 @@ onMounted(() => load())
         <Plus :size="16" />
         <span>新建板块</span>
       </button>
+    </div>
+
+    <div
+      v-if="loadError"
+      class="mb-4 rounded-lg border border-[var(--color-cinnabar-soft)] bg-[var(--color-cinnabar-soft)] px-4 py-3 text-sm text-[var(--color-cinnabar)]"
+    >
+      {{ loadError }}
     </div>
 
     <!-- 表格 -->

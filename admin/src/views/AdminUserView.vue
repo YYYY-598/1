@@ -36,7 +36,7 @@ onMounted(() => load())
   <div class="p-8">
     <div class="mb-8">
       <h1 class="text-2xl font-serif font-bold mb-1">用户管理</h1>
-      <p class="text-sm text-[var(--color-ink-muted)]">管理论坛用户，共 {{ total }} 人</p>
+      <p class="text-sm text-[var(--color-ink-muted)]">管理 YY论坛 用户，共 {{ total }} 人</p>
     </div>
 
     <div class="bg-white rounded-xl border border-[var(--color-paper-darker)] overflow-hidden">

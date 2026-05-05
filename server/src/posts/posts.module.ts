@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './post.entity';
+import { PostImage } from './post-image.entity';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { AdminPostsController } from './admin-posts.controller';
@@ -12,7 +13,7 @@ import { Like } from '../likes/like.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post, Comment, Board, User, Like]), AuthModule],
+  imports: [TypeOrmModule.forFeature([Post, PostImage, Comment, Board, User, Like]), AuthModule],
   controllers: [PostsController, AdminPostsController, AdminCommentsController],
   providers: [PostsService],
   exports: [PostsService],

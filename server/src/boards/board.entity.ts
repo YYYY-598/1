@@ -12,6 +12,9 @@ export class Board {
   @Column({ type: 'varchar', length: 200, default: '' })
   description!: string;
 
+  @Column({ type: 'int', default: 0 })
+  sort_order!: number;
+
   @CreateDateColumn()
   created_at!: Date;
 

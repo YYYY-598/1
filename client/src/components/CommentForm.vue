@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useAuth } from '../stores/useAuth'
 
 const emit = defineEmits<{
   submit: [content: string]
@@ -7,6 +8,8 @@ const emit = defineEmits<{
 
 const content = ref('')
 const submitting = ref(false)
+const { user } = useAuth()
+const initial = computed(() => user.value?.username.charAt(0).toUpperCase() || '?')
 
 async function handleSubmit() {
   const trimmed = content.value.trim()
@@ -23,8 +26,14 @@ async function handleSubmit() {
 
 <template>
   <div class="flex gap-3">
-    <div class="w-8 h-8 rounded-full bg-[var(--color-cinnabar-soft)] text-[var(--color-cinnabar)] flex items-center justify-center text-xs font-semibold shrink-0">
-      Y
+    <div class="w-8 h-8 rounded-full bg-[var(--color-cinnabar-soft)] text-[var(--color-cinnabar)] flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden">
+      <img
+        v-if="user?.avatar_url"
+        :src="user.avatar_url"
+        :alt="user.username"
+        class="w-full h-full object-cover"
+      />
+      <span v-else>{{ initial }}</span>
     </div>
     <div class="flex-1">
       <textarea

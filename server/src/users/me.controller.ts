@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import type { Request } from 'express';
 import { extname, join } from 'path';
 import { mkdirSync } from 'fs';
 import { UsersService } from './users.service';
@@ -56,18 +57,18 @@ export class MeController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: (_req, _file, cb) => {
+        destination: (_req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
           ensureAvatarDir();
           cb(null, avatarDir);
         },
-        filename: (_req, file, cb) => {
+        filename: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
           const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
           cb(null, `${unique}${extname(file.originalname)}`);
         },
       }),
-      fileFilter: (_req, file, cb) => {
+      fileFilter: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, acceptFile: boolean) => void) => {
         if (!file.mimetype.startsWith('image/')) {
-          cb(new BadRequestException('仅支持图片文件'), false);
+          cb(new Error('仅支持图片文件'), false);
           return;
         }
         cb(null, true);
@@ -79,7 +80,7 @@ export class MeController {
   )
   async uploadAvatar(
     @Req() req: AuthenticatedRequest,
-    @UploadedFile() file?: { filename: string },
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     if (!file) {
       throw new BadRequestException('请上传头像文件');
