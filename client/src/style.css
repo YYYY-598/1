@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1a1a18;
+  --color-ink-light: #4a4a45;
+  --color-ink-muted: #8a8a82;
+  --color-paper: #faf8f5;
+  --color-paper-dark: #f2efe9;
+  --color-paper-darker: #e8e4df;
+  --color-cinnabar: #c44d34;
+  --color-cinnabar-hover: #a83a25;
+  --color-cinnabar-soft: #fdf0ec;
+  --color-sage: #4a7c82;
+  --color-sage-soft: #edf4f5;
+  --color-card: #ffffff;
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "SimSun", serif;
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-paper-darker);
+  border-radius: 3px;
+}

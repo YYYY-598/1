@@ -1,0 +1,22 @@
+方法,路径,说明,需登录,请求体,响应,状态
+POST,/api/auth/register,注册,否,"{ username, email, password }","{ token, user }",已完成
+POST,/api/auth/login,登录,否,"{ email, password }","{ token, user }",已完成
+GET,/api/boards,板块列表,否,-,"[{ id, name, description, sort_order, created_at }]",已完成
+GET,/api/boards/:id,板块详情,否,-,"{ id, name, description, sort_order, created_at }",已完成
+GET,/api/boards/:boardId/posts?page&pageSize,板块帖子列表（分页，含图片/头像/评论数）,否,-,"{ items: [{ id, title, summary, cover_url, images: [string], username, user_id, avatar_url, board_id, board_name, like_count, comment_count, created_at }], total, page, pageSize }",已完成
+GET,/api/feed?page&pageSize&boardId,推荐/频道信息流（图片信息流卡片）,否,-,"{ items: [{ id, title, summary, cover_url, images: [string], username, user_id, avatar_url, board_id, board_name, like_count, comment_count, created_at }], total, page, pageSize }",已完成
+GET,/api/posts/search?q&page&pageSize,搜索帖子,否,-,"{ items: [{ id, title, summary, cover_url, images: [string], username, user_id, avatar_url, board_id, board_name, like_count, comment_count, created_at }], total, page, pageSize }",已完成
+GET,/api/posts/:id,帖子详情（含图片、评论、头像）,否,-,"{ id, title, content, username, avatar_url, user_id, board_id, board_name, cover_url, images: [string], like_count, liked, created_at, updated_at, comments: [{ id, content, username, avatar_url, user_id, created_at }] }",已完成
+POST,/api/boards/:boardId/posts,发帖（先创建文本记录，再上传图片）,是,"{ title, content }","{ id, title, content, ... }",已完成
+POST,/api/posts/:id/images,上传帖子图片,是,multipart/form-data(files),"{ images: [{ id, url, sort_order }] }",已完成
+DELETE,/api/posts/:postId/images/:imageId,删除帖子图片（本人或管理员）,是,-,-,已完成
+PUT,/api/posts/:id,编辑帖子（本人或管理员）,是,"{ title, content }","{ id, title, content, board_id, user_id, updated_at }",已完成
+DELETE,/api/posts/:id,删帖（本人或管理员）,是,-,-,已完成
+POST,/api/posts/:postId/comments,发表评论,是,"{ content }","{ id, content, username, avatar_url, user_id, created_at }",已完成
+DELETE,/api/comments/:id,删评论（本人或管理员）,是,-,-,已完成
+POST,/api/posts/:id/like,点赞/取消（toggle）,是,-,"{ liked, like_count }",已完成
+GET,/api/me,获取我的资料,是,-,"{ id, username, email, role, avatar_url, signature, created_at, post_count }",已完成
+PUT,/api/me/profile,更新我的资料,是,"{ signature }","{ id, username, email, role, avatar_url, signature, created_at, post_count }",已完成
+POST,/api/me/avatar,上传头像,是,multipart/form-data(file),"{ avatar_url }",已完成
+PUT,/api/me/password,修改密码,是,"{ old_password, new_password }","{ success: true }",已完成
+GET,/api/me/posts?page&pageSize,获取我发过的帖子,是,-,"{ items: [{ id, title, summary, board_id, board_name, like_count, comment_count, created_at, updated_at }], total, page, pageSize }",已完成
